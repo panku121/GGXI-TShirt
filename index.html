@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MNS Kings T-Shirt Form</title>
-    <link rel="icon" type="image/png" href="./mnsKings.png">
+    <title>Royal Intruders T-Shirt Form</title>
+    <link rel="icon" type="image/png" href="./teePrice.jpeg">
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
     <section class="neon-card">
-        <div class="logo-wrap">
-            <img src="./mnsKings.png" alt="MNS Kings Logo">
-        </div>
-        <h1>MNS Kings T-Shirt Form</h1>
+        <button type="button" class="logo-wrap" id="logoPreviewBtn" aria-label="View T-shirt price chart full size">
+            <img src="./teePrice.jpeg" alt="T-shirt price chart">
+            <span class="logo-hint">Tap to view</span>
+        </button>
+        <h1>Royal Intruders T-Shirt Form</h1>
         <p class="subtitle">Please fill all details correctly.</p>
 
         <form id="mnsKingsForm" novalidate>
@@ -71,6 +72,15 @@
             <div class="status" id="statusMessage"></div>
         </form>
     </section>
+
+    <div class="image-lightbox" id="imageLightbox" hidden>
+        <div class="image-lightbox__backdrop" id="lightboxBackdrop"></div>
+        <div class="image-lightbox__content">
+            <button type="button" class="image-lightbox__close" id="lightboxClose" aria-label="Close full view">&times;</button>
+            <img src="./teePrice.jpeg" alt="T-shirt price chart full view" id="lightboxImage">
+        </div>
+    </div>
+
     <script src="./script.js"></script>
 </body>
 </html>

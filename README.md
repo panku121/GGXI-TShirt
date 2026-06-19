@@ -1,2 +1,2 @@
-# MNS Kings T-Shirt
-MNS Kings T-shirt details
+# Royal Intruders T-Shirt
+Royal Intruders T-shirt details

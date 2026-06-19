@@ -107,7 +107,7 @@ async function handleFormSubmit(event) {
 
     try {
         await saveToGoogleSheet(formData);
-        statusMessage.textContent = "Thanks " + formData.playerName.trim() + ", aapki T-shirt request Team Captain Manish k pass receive ho gayi hai.";
+        statusMessage.textContent = "Thanks " + formData.playerName.trim() + ", aapki T-shirt request Team Captain k pass receive ho gayi hai.";
         statusMessage.className = "status success";
         setTimeout(function () {
             form.reset();
@@ -144,4 +144,31 @@ nameOnTshirtInput.addEventListener("input", function () {
 
 numberOnBackInput.addEventListener("input", function () {
     this.value = this.value.replace(/\D/g, "").slice(0, 3);
+});
+
+const logoPreviewBtn = document.getElementById("logoPreviewBtn");
+const imageLightbox = document.getElementById("imageLightbox");
+const lightboxBackdrop = document.getElementById("lightboxBackdrop");
+const lightboxClose = document.getElementById("lightboxClose");
+
+function openImageLightbox() {
+    imageLightbox.hidden = false;
+    document.body.style.overflow = "hidden";
+    lightboxClose.focus();
+}
+
+function closeImageLightbox() {
+    imageLightbox.hidden = true;
+    document.body.style.overflow = "";
+    logoPreviewBtn.focus();
+}
+
+logoPreviewBtn.addEventListener("click", openImageLightbox);
+lightboxBackdrop.addEventListener("click", closeImageLightbox);
+lightboxClose.addEventListener("click", closeImageLightbox);
+
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !imageLightbox.hidden) {
+        closeImageLightbox();
+    }
 });
