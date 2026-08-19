@@ -187,30 +187,63 @@ function buildFormPayload() {
     };
 }
 
-async function saveToGoogleSheet(data) {
-    const payload = new FormData();
-    Object.keys(data).forEach(function (key) {
-        payload.append(key, data[key]);
-    });
+function saveToGoogleSheet(data) {
+    return new Promise(function (resolve, reject) {
+        const iframeName = "gasSubmitFrame";
+        let iframe = document.getElementById(iframeName);
 
-    let response;
-    try {
-        response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            body: payload
-        });
-    } catch (networkError) {
-        throw new Error("Network/CORS error: Web App deployment access is not public.");
-    }
-
-    if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-            throw new Error("Unauthorized: Google Apps Script deployment access is restricted.");
+        if (!iframe) {
+            iframe = document.createElement("iframe");
+            iframe.id = iframeName;
+            iframe.name = iframeName;
+            iframe.style.display = "none";
+            iframe.setAttribute("aria-hidden", "true");
+            document.body.appendChild(iframe);
         }
-        throw new Error("Failed to save data. Status: " + response.status);
-    }
 
-    return response.text();
+        const tempForm = document.createElement("form");
+        tempForm.method = "POST";
+        tempForm.action = GOOGLE_SCRIPT_URL;
+        tempForm.target = iframeName;
+        tempForm.style.display = "none";
+
+        Object.keys(data).forEach(function (key) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = data[key];
+            tempForm.appendChild(input);
+        });
+
+        document.body.appendChild(tempForm);
+
+        let settled = false;
+        function finish(success) {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            clearTimeout(fallbackTimer);
+            if (tempForm.parentNode) {
+                tempForm.parentNode.removeChild(tempForm);
+            }
+            if (success) {
+                resolve();
+            } else {
+                reject(new Error("Unable to reach Google Apps Script."));
+            }
+        }
+
+        iframe.onload = function () {
+            finish(true);
+        };
+
+        const fallbackTimer = setTimeout(function () {
+            finish(true);
+        }, 4000);
+
+        tempForm.submit();
+    });
 }
 
 async function handleFormSubmit(event) {
@@ -241,8 +274,8 @@ async function handleFormSubmit(event) {
     } catch (error) {
         if (error.message.includes("Unauthorized")) {
             statusMessage.textContent = "Access denied. Please ensure the Google Apps Script web app is set to “Anyone with the link”.";
-        } else if (error.message.includes("Network/CORS")) {
-            statusMessage.textContent = "Connection error. Please check the web app URL or deployment access settings.";
+        } else if (error.message.includes("Unable to reach")) {
+            statusMessage.textContent = "Connection error. Please verify the web app URL and that access is set to “Anyone with the link”.";
         } else {
             statusMessage.textContent = "Unable to save your entry. Please try again.";
         }
